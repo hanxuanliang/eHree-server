@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @Date: 2020/2/5 9:50
  */
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/banner")
 public class BannerController {
 
-    @GetMapping("/banner")
-    public String banner() {
+    @GetMapping("/test")
+    public String test() {
 //        throw new RuntimeException("test API");
         throw new ForbiddenException(10001);
-//        return "/v1/banner";
+//        return "/v1/"banner;
     }
 }
