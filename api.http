@@ -1,0 +1,6 @@
+### 异常处理类 test
+GET {{baseUrl}}/v1/banner
+Content-Type: application/json
+
+###
+
