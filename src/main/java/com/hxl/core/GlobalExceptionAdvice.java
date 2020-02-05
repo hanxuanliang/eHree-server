@@ -1,7 +1,9 @@
 package com.hxl.core;
 
+import com.hxl.core.configuration.ExceptionCodeConfiguration;
 import com.hxl.exception.http.HttpException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +23,13 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class GlobalExceptionAdvice {
 
+    private final ExceptionCodeConfiguration codeConfiguration;
+
+    @Autowired
+    public GlobalExceptionAdvice(ExceptionCodeConfiguration codeConfiguration) {
+        this.codeConfiguration = codeConfiguration;
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public UnifyResponse handlerGeneralException(HttpServletRequest request, Exception exception) {
@@ -36,7 +45,10 @@ public class GlobalExceptionAdvice {
         String requestUri = request.getRequestURI();
         String method = request.getMethod();
 
-        UnifyResponse message = new UnifyResponse(exception.getCode(), "不知名错误", method + " " + requestUri);
+        UnifyResponse message = new UnifyResponse(
+                exception.getCode(),
+                codeConfiguration.getOfMessage(exception.getCode()),
+                method + " " + requestUri);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpStatus httpStatus = HttpStatus.resolve(exception.getHttpStatusCode());

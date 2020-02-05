@@ -1,7 +1,6 @@
 package com.hxl.api.v1;
 
 import com.hxl.exception.http.ForbiddenException;
-import com.hxl.exception.http.NotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/v1")
-public class Banner {
+public class BannerController {
 
     @GetMapping("/banner")
     public String banner() {
