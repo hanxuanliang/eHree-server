@@ -1,6 +1,16 @@
 ### 异常处理类 test
-GET {{baseUrl}}/v1/banner
+GET {{baseUrl}}/v1/banner/test/1
 Content-Type: application/json
 
-###
+### 参数校验 test
+POST {{baseUrl}}/v1/banner/test/10099?name=achxl
+Content-Type: application/json
 
+{
+  "name": "hxl",
+  "age": 20,
+  "password": "123456",
+  "repeatPassword": "123456"
+}
+
+###

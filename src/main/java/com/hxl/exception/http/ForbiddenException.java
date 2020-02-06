@@ -8,7 +8,7 @@ package com.hxl.exception.http;
 public class ForbiddenException extends HttpException {
 
     public ForbiddenException(Integer code) {
-        this.httpStatusCode = 403;
         this.code = code;
+        this.httpStatusCode = 403;
     }
 }
