@@ -1,4 +1,4 @@
-package com.hxl.exception.http;
+package com.hxl.exception;
 
 /**
  * @Description: forbidden 异常类
@@ -9,6 +9,6 @@ public class ForbiddenException extends HttpException {
 
     public ForbiddenException(Integer code) {
         this.code = code;
-        this.httpStatusCode = 403;
+        this.httpCode = 403;
     }
 }

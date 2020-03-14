@@ -1,7 +1,7 @@
 package com.hxl.core;
 
 import com.hxl.core.configuration.ExceptionCodeConfiguration;
-import com.hxl.exception.http.HttpException;
+import com.hxl.exception.HttpException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -71,7 +71,7 @@ public class GlobalExceptionAdvice {
                 method + " " + requestUri);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpStatus httpStatus = HttpStatus.resolve(exception.getHttpStatusCode());
+        HttpStatus httpStatus = HttpStatus.resolve(exception.getHttpCode());
 
         return new ResponseEntity<>(message, headers, Objects.requireNonNull(httpStatus));
     }

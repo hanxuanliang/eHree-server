@@ -7,7 +7,8 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 /**
- * @Description: 两次密码输入 相等注解
+ * 两次密码输入 相等注解
+ *
  * @Author: hanxuanliang
  * @Date: 2020/2/5 20:10
  */
@@ -18,10 +19,6 @@ import java.lang.annotation.*;
 public @interface PasswordRepeatEqual {
 
     String message() default "两次密码不相等";
-
-    int min() default 6;
-
-    int max() default 16;
 
     Class<?>[] groups() default {};
 

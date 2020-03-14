@@ -1,4 +1,4 @@
-package com.hxl.exception.http;
+package com.hxl.exception;
 
 /**
  * @Description: Not Found 异常类
@@ -9,6 +9,6 @@ public class NotFoundException extends  HttpException{
 
     public NotFoundException(Integer code) {
         this.code = code;
-        this.httpStatusCode = 404;
+        this.httpCode = 404;
     }
 }

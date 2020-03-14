@@ -7,11 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
 /**
- * @Description: person 前端发来的封装数据结构 “数据传输对象”
+ * person 前端发来的封装数据结构 “数据传输对象”
+ *
  * @Author: hanxuanliang
  * @Date: 2020/2/5 19:36
  */

@@ -1,4 +1,4 @@
-package com.hxl.exception.http;
+package com.hxl.exception;
 
 import lombok.Getter;
 
@@ -15,6 +15,6 @@ public class HttpException extends RuntimeException {
     protected Integer code;
 
     @NotNull
-    protected Integer httpStatusCode;
+    protected Integer httpCode;
 
 }

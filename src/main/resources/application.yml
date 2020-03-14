@@ -1,5 +1,15 @@
-server:
-  port: 8081
+spring:
+  profiles:
+    active: dev
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    # 格式化SQL
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
 
 ehree:
   api-basepackage: com.hxl.api
