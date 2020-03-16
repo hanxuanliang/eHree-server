@@ -2,6 +2,10 @@ package com.hxl.service;
 
 import com.hxl.model.Spu;
 import com.hxl.repository.SpuRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +27,8 @@ public class SpuService {
         return spuRepository.findOneById(id);
     }
 
-    public List<Spu> getLatestPagingSpu() {
-        return spuRepository.findAll();
+    public Page<Spu> getLatestPagingSpu(Integer pageNum, Integer size) {
+        Pageable page = PageRequest.of(pageNum, size, Sort.by("updateTime").descending());
+        return spuRepository.findAll(page);
     }
 }

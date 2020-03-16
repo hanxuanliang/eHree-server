@@ -2,7 +2,6 @@ package com.hxl.repository;
 
 import com.hxl.model.Spu;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 /**
  * Spu Dao层

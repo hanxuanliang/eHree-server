@@ -1,17 +1,21 @@
 package com.hxl.api.v1;
 
+import com.github.dozermapper.core.DozerBeanMapperBuilder;
+import com.github.dozermapper.core.Mapper;
+import com.hxl.bo.PageCounter;
 import com.hxl.exception.NotFoundException;
-import com.hxl.model.Banner;
 import com.hxl.model.Spu;
 import com.hxl.service.SpuService;
+import com.hxl.utils.CommonUtil;
+import com.hxl.vo.PagingVO;
+import com.hxl.vo.SpuVO;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,8 +41,22 @@ public class SpuController {
         return spu;
     }
 
+    /**
+     * 【分页机制】下的获取最新spuList
+     *
+     * @param start 开始数目
+     * @param count 条数
+     * @return SpuVOList
+     * @date: 2020/3/16 10:24
+     */
     @GetMapping("/latest")
-    public List<Spu> getLatestSpuList() {
-        return spuService.getLatestPagingSpu();
+    public PagingVO<Spu, SpuVO> getLatestSpuList(@RequestParam(defaultValue = "0") Integer start,
+                                        @RequestParam(defaultValue = "10") Integer count) {
+
+        PageCounter pageCounter = CommonUtil.convertToPageParameter(start, count);
+
+        Page<Spu> pageSpu = spuService.getLatestPagingSpu(pageCounter.getPage(), pageCounter.getCount());
+
+        return new PagingVO<>(pageSpu, SpuVO.class);
     }
 }
