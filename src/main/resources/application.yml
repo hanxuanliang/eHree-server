@@ -10,6 +10,12 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  jackson:
+    # 控制序列化的下划线
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      # 控制时间序列化的时间戳
+      WRITE_DATES_AS_TIMESTAMPS: true
 
 ehree:
   api-basepackage: com.hxl.api

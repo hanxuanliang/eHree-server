@@ -3,7 +3,6 @@ package com.hxl.core;
 import com.hxl.core.configuration.ExceptionCodeConfiguration;
 import com.hxl.exception.HttpException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -25,16 +25,12 @@ import java.util.Objects;
  * @Author: hanxuanliang
  * @Date: 2020/2/5 9:48
  */
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class GlobalExceptionAdvice {
 
-    private final ExceptionCodeConfiguration codeConfiguration;
-
-    @Autowired
-    public GlobalExceptionAdvice(ExceptionCodeConfiguration codeConfiguration) {
-        this.codeConfiguration = codeConfiguration;
-    }
+    @Resource
+    private ExceptionCodeConfiguration codeConfiguration;
 
     /**
      * 未知异常，下面的异常都处理不了，会到此处

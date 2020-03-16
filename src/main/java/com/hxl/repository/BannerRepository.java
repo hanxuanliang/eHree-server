@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
  * @Author: hanxuanliang
  * @Date: 2020/3/14 10:43
  */
-@Repository
 public interface BannerRepository extends JpaRepository<Banner, Long> {
 
     /**

@@ -1,8 +1,6 @@
 package com.hxl.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,11 +12,11 @@ import java.util.List;
  * @Date: 2020/3/14 9:07
  */
 @Entity
-@Table(name = "ehree_banner")
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Banner {
+public class Banner extends BaseEntity{
 
     @Id
     private Long id;
@@ -31,10 +29,10 @@ public class Banner {
 
     private String title;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "bannerId")
     // 外键需要标识在一对多的 "一" 上的 “多” 的字段上
     // 【这种方式是单向标注一对多，因为只在 "一" 上注解】
     // 不建议使用这种实体类的方式反向生成表字段，很受限制而且还不受自己控制
-    private List<BannerItem> bannerItems;
+    private List<BannerItem> items;
 }

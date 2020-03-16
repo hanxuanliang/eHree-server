@@ -1,20 +1,24 @@
 package com.hxl.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
 
 /**
- * Spu 数据表映射
+ * Spu【商品】 数据表映射
  *
  * @Author: hanxuanliang
  * @Date: 2020/3/14 11:45
  */
 @Entity
-@Table(name = "ehree_spu")
-public class Spu {
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Spu extends BaseEntity{
 
     @Id
     private Long id;
@@ -23,6 +27,28 @@ public class Spu {
 
     private String subTitle;
 
-    @ManyToMany
-    private List<Theme> themeList;
+    private Long categoryId;
+
+    private Long rootCategoryId;
+
+    private byte online;
+
+    private String price;
+
+    private String discountPrice;
+
+    private Long sketchSpecId;
+
+    private Long defaultSkuId;
+
+    private String img;
+
+    private String description;
+
+    private String tags;
+
+    private Byte isTest;
+
+    private String forThemeImg;
+
 }

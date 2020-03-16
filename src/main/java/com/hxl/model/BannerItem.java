@@ -1,8 +1,12 @@
 package com.hxl.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * Banner Item 属于 Banner 子项
@@ -10,8 +14,11 @@ import javax.persistence.Table;
  * @Date: 2020/3/14 10:20
  */
 @Entity
-@Table(name = "ehree_banner_item")
-public class BannerItem {
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class BannerItem extends BaseEntity{
 
     @Id
     private Long id;
@@ -25,4 +32,5 @@ public class BannerItem {
     private Short type;
 
     private String name;
+
 }
