@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * sku【规格商品】
+ * sku【带有具体规格的商品】
  *
  * @Author: hanxuanliang
  * @Date: 2020/3/16 8:40
@@ -23,6 +24,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Where(clause = "delete_time is NULL and online = 1")
 public class Sku extends BaseEntity {
 
     @Id
@@ -40,13 +42,17 @@ public class Sku extends BaseEntity {
 
     private Long spuId;
 
+    // 冗余字段
     private Long categoryId;
 
+    // 冗余字段
     private Long rootCategoryId;
 
+    // 规格的设计【一个sku的规格是确定的，而且这里是数组里面包裹json字符串】
     @Convert(converter = SuperGenericAndJson.class)
     private List<Spec> specs;
 
+    // 判断用户是否选择了一个完整的规格尺寸，看当前的code拼接和数据库的code字段是否相等
     private String code;
 
     private Long stock;

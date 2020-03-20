@@ -102,12 +102,15 @@ public class GlobalExceptionAdvice {
         String requestUrl = request.getRequestURI();
         String method = request.getMethod();
 
-        StringBuilder messages = new StringBuilder();
+        StringBuilder errorMsg = new StringBuilder();
         for (ConstraintViolation<?> error : exception.getConstraintViolations()) {
-            messages.append(error.getMessageTemplate()).append(";");
+            String msg = error.getMessage();
+            String m = error.getPropertyPath().toString();
+            String name = m.split("[.]")[1];
+            errorMsg.append(name).append(" ").append(msg).append(";");
         }
 
-        return new UnifyResponse(10001, messages.substring(0, messages.toString().length() - 1), method + " " + requestUrl);
+        return new UnifyResponse(10001, errorMsg.substring(0, errorMsg.toString().length() - 1), method + " " + requestUrl);
     }
 
     private String formatAllErrorMessages(List<ObjectError> errors) {

@@ -1,6 +1,7 @@
 package com.hxl.model;
 
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Where(clause = "delete_time is NULL")
 public class Banner extends BaseEntity{
 
     @Id

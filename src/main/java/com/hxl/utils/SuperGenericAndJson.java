@@ -10,7 +10,8 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * @Description:
+ * 基础json与普通类型的转换器
+ *
  * @Author: hanxuanliang
  * @Date: 2020/3/16 8:43
  */

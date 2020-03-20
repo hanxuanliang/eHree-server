@@ -11,6 +11,14 @@ import java.util.List;
 /**
  * Spu【商品】 数据表映射
  *
+ * 整理一下 Spu Sku Spec 之间的关系：
+ * 1. Spu -- Spec_Key  多对多
+ *      【spu会有多种规格，而一种规则也会在不同的spu下出现】
+ * 2. Sku -- Spec_Value  多对多
+ *      【sku对应的是不同的具体的规格值，一种具体的规格值也会出现在不同的sku上】
+ * 2. Spu -- Sku  一对多
+ *      【spu是总商品，sku是携带具体规格的商品】
+ *
  * @Author: hanxuanliang
  * @Date: 2020/3/14 11:45
  */

@@ -1,7 +1,5 @@
 package com.hxl.api.v1;
 
-import com.github.dozermapper.core.DozerBeanMapperBuilder;
-import com.github.dozermapper.core.Mapper;
 import com.hxl.bo.PageCounter;
 import com.hxl.exception.NotFoundException;
 import com.hxl.model.Spu;
@@ -15,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.constraints.Positive;
 
 /**
  * Spu API接口
@@ -51,12 +48,22 @@ public class SpuController {
      */
     @GetMapping("/latest")
     public PagingVO<Spu, SpuVO> getLatestSpuList(@RequestParam(defaultValue = "0") Integer start,
-                                        @RequestParam(defaultValue = "10") Integer count) {
-
+                                                 @RequestParam(defaultValue = "10") Integer count) {
         PageCounter pageCounter = CommonUtil.convertToPageParameter(start, count);
 
         Page<Spu> pageSpu = spuService.getLatestPagingSpu(pageCounter.getPage(), pageCounter.getCount());
 
         return new PagingVO<>(pageSpu, SpuVO.class);
+    }
+
+    @GetMapping("/by/category/{id}")
+    public PagingVO<Spu, SpuVO> getByCategoryId(@PathVariable @NotBlank @Positive(message = "{id.positive}") Long id,
+                                                @RequestParam(name = "is_root", defaultValue = "false") Boolean isRoot,
+                                                @RequestParam(defaultValue = "0") Integer start,
+                                                @RequestParam(defaultValue = "10") Integer count) {
+        PageCounter pageCounter = CommonUtil.convertToPageParameter(start, count);
+
+        Page<Spu> page = spuService.getByCategoryId(id, isRoot, pageCounter.getPage(), pageCounter.getCount());
+        return new PagingVO<>(page, SpuVO.class);
     }
 }
