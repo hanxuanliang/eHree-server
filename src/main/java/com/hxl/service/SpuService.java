@@ -2,6 +2,7 @@ package com.hxl.service;
 
 import com.hxl.model.Spu;
 import com.hxl.repository.SpuRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
  * @Date: 2020/3/15 22:15
  */
 @Service
+@Slf4j
 public class SpuService {
 
     @Resource

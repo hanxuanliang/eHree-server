@@ -2,6 +2,7 @@ package com.hxl.service;
 
 import com.hxl.model.Banner;
 import com.hxl.repository.BannerRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -14,6 +15,7 @@ import javax.annotation.Resource;
  * @Date: 2020/3/14 8:54
  */
 @Service
+@Slf4j
 public class BannerService {
 
     @Resource
