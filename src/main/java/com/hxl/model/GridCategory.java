@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * 九宫格 模型表
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 @Entity
 @Setter
 @Getter
+@Table(name = "grid_category")
 public class GridCategory extends BaseEntity{
 
     @Id

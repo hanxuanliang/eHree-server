@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Banner Item 属于 Banner 子项
@@ -18,12 +19,11 @@ import javax.persistence.Id;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "banner_item")
 public class BannerItem extends BaseEntity{
 
     @Id
     private Long id;
-
-    private Long bannerId;
 
     private String img;
 
@@ -33,4 +33,5 @@ public class BannerItem extends BaseEntity{
 
     private String name;
 
+    private Long bannerId;
 }

@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * spu 详情页的具体下方展示图片
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 @Entity
 @Getter
 @Setter
+@Table(name = "spu_detail_img")
 public class SpuDetailImg extends BaseEntity{
 
     @Id

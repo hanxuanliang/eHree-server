@@ -15,7 +15,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class SpuVO {
+public class SpuPureVO {
 
     private Long id;
 

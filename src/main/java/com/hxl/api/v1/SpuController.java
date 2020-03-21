@@ -6,7 +6,7 @@ import com.hxl.model.Spu;
 import com.hxl.service.SpuService;
 import com.hxl.utils.CommonUtil;
 import com.hxl.vo.PagingVO;
-import com.hxl.vo.SpuVO;
+import com.hxl.vo.SpuPureVO;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -47,23 +47,23 @@ public class SpuController {
      * @date: 2020/3/16 10:24
      */
     @GetMapping("/latest")
-    public PagingVO<Spu, SpuVO> getLatestSpuList(@RequestParam(defaultValue = "0") Integer start,
-                                                 @RequestParam(defaultValue = "10") Integer count) {
+    public PagingVO<Spu, SpuPureVO> getLatestSpuList(@RequestParam(defaultValue = "0") Integer start,
+                                                     @RequestParam(defaultValue = "10") Integer count) {
         PageCounter pageCounter = CommonUtil.convertToPageParameter(start, count);
 
         Page<Spu> pageSpu = spuService.getLatestPagingSpu(pageCounter.getPage(), pageCounter.getCount());
 
-        return new PagingVO<>(pageSpu, SpuVO.class);
+        return new PagingVO<>(pageSpu, SpuPureVO.class);
     }
 
     @GetMapping("/by/category/{id}")
-    public PagingVO<Spu, SpuVO> getByCategoryId(@PathVariable @NotBlank @Positive(message = "{id.positive}") Long id,
-                                                @RequestParam(name = "is_root", defaultValue = "false") Boolean isRoot,
-                                                @RequestParam(defaultValue = "0") Integer start,
-                                                @RequestParam(defaultValue = "10") Integer count) {
+    public PagingVO<Spu, SpuPureVO> getByCategoryId(@PathVariable @NotBlank @Positive(message = "{id.positive}") Long id,
+                                                    @RequestParam(name = "is_root", defaultValue = "false") Boolean isRoot,
+                                                    @RequestParam(defaultValue = "0") Integer start,
+                                                    @RequestParam(defaultValue = "10") Integer count) {
         PageCounter pageCounter = CommonUtil.convertToPageParameter(start, count);
 
         Page<Spu> page = spuService.getByCategoryId(id, isRoot, pageCounter.getPage(), pageCounter.getCount());
-        return new PagingVO<>(page, SpuVO.class);
+        return new PagingVO<>(page, SpuPureVO.class);
     }
 }

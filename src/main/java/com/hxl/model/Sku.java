@@ -10,6 +10,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "sku")
 @Where(clause = "delete_time is NULL and online = 1")
 public class Sku extends BaseEntity {
 

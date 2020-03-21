@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * 商品分类 模型表
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 @Entity
 @Getter
 @Setter
+@Table(name = "category")
 public class Category {
 
     @Id

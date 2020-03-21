@@ -6,4 +6,5 @@
 target/
 
 ### password
-src/main/resources/config/application-dev.yml
+/src/main/resources/config/application-dev.yml
+/src/main/resources/ehree-v1.sql

@@ -27,6 +27,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "spu")
 public class Spu extends BaseEntity{
 
     @Id
@@ -56,7 +57,7 @@ public class Spu extends BaseEntity{
 
     private String tags;
 
-    private Byte isTest;
+    private String forThemeImg;
 
     /**
      * 至于什么时候加上这个一对多，多对多的导航关联关系，看你是否需要跨表查询，
