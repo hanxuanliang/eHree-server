@@ -12,7 +12,7 @@ import javax.validation.ConstraintValidatorContext;
  * @Author: hanxuanliang
  * @Date: 2020/2/5 20:34
  */
-public class PasswordValidator implements ConstraintValidator<PasswordRepeatEqual, PersonDTO> {
+public class PasswordEqualValidator implements ConstraintValidator<PasswordRepeatEqual, PersonDTO> {
 
     @Override
     public boolean isValid(PersonDTO personDTO, ConstraintValidatorContext constraintValidatorContext) {

@@ -1,6 +1,6 @@
 package com.hxl.validators.annotations;
 
-import com.hxl.validators.PasswordValidator;
+import com.hxl.validators.PasswordEqualValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.FIELD})
-@Constraint(validatedBy = {PasswordValidator.class})
+@Constraint(validatedBy = {PasswordEqualValidator.class})
 public @interface PasswordRepeatEqual {
 
     String message() default "两次密码不相等";
