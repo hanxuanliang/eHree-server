@@ -1,15 +1,19 @@
 package com.hxl.core.interceptors;
 
 import com.auth0.jwt.interfaces.Claim;
+import com.hxl.core.LocalUser;
 import com.hxl.core.annotations.ScopeLevel;
 import com.hxl.exception.ForbiddenException;
 import com.hxl.exception.UnAuthenticatedException;
+import com.hxl.model.User;
+import com.hxl.service.UserService;
 import com.hxl.utils.JwtToken;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -22,6 +26,10 @@ import java.util.Optional;
  * @Date: 2020/3/30 16:41
  */
 public class PermissionInterceptor extends HandlerInterceptorAdapter {
+
+    @Resource
+    private UserService userService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Optional<ScopeLevel> scopeLevel = getScopeLevel(handler);
@@ -42,7 +50,11 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
         String token = tokens[1];
         Optional<Map<String, Claim>> optionalMap = JwtToken.getClaims(token);
         Map<String, Claim> map = optionalMap.orElseThrow(() -> new UnAuthenticatedException(10004));
-        return hasPermission(scopeLevel.get(), map);
+        boolean isValid = hasPermission(scopeLevel.get(), map);
+        if (isValid) {
+            setLocalUser(map);
+        }
+        return isValid;
     }
 
     @Override
@@ -62,7 +74,15 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
         return Optional.empty();
     }
 
-    private boolean hasPermission(ScopeLevel scopeLevel, Map<String, Claim> map) {
+    private void setLocalUser(Map<String, Claim> claimMap) {
+        Long uid = claimMap.get("uid").asLong();
+        // TODO scope 携带再考虑
+        // Integer scope = claimMap.get("scope").asInt();
+        User user = userService.getUserById(uid);
+        LocalUser.setLocalUser(user);
+    }
+
+    private Boolean hasPermission(ScopeLevel scopeLevel, Map<String, Claim> map) {
         int level = scopeLevel.level();
         Integer scope = map.get("scope").asInt();
         if (level > scope) {

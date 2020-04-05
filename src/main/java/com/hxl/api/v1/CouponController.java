@@ -1,12 +1,10 @@
 package com.hxl.api.v1;
 
+import com.hxl.core.annotations.ScopeLevel;
 import com.hxl.model.Coupon;
 import com.hxl.service.CouponService;
 import com.hxl.vo.CouponPureVO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Collections;
@@ -43,5 +41,11 @@ public class CouponController {
             return Collections.emptyList();
         }
         return CouponPureVO.getList(couponList);
+    }
+
+    @ScopeLevel()
+    @PostMapping("/collect/{uid}")
+    public void collectCoupon(@PathVariable Long uid) {
+
     }
 }
