@@ -20,7 +20,7 @@ import java.util.Map;
 @Builder
 @Entity
 @Where(clause = "delete_time is null")
-public class User {
+public class User extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

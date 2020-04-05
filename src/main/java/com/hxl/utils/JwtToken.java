@@ -37,13 +37,14 @@ public class JwtToken {
     }
 
     public static Optional<Map<String, Claim>> getClaims(String token) {
-        DecodedJWT decodedjwt = null;
-        Algorithm algorithm = Algorithm.HMAC256(JwtToken.jwtKey);
+        Algorithm algorithm = Algorithm.HMAC256(token);
+        // 解析验证 Token
         JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+        DecodedJWT decodedjwt;
         try {
             decodedjwt = jwtVerifier.verify(token);
         } catch (JWTVerificationException e) {
-            e.printStackTrace();
+            return Optional.empty();
         }
         return Optional.of(decodedjwt.getClaims());
     }
@@ -69,13 +70,13 @@ public class JwtToken {
                 .sign(algorithm);
     }
 
-    public static Boolean verify(String token) {
+    public static Boolean verifyToken(String token) {
+        Algorithm algorithm = Algorithm.HMAC256(token);
+        JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+        DecodedJWT decodedjwt;
         try {
-            Algorithm algorithm = Algorithm.HMAC256(JwtToken.jwtKey);
-            JWTVerifier jwtVerifier = JWT.require(algorithm).build();
-            jwtVerifier.verify(token);
+            decodedjwt = jwtVerifier.verify(token);
         } catch (JWTVerificationException e) {
-            e.printStackTrace();
             return false;
         }
         return true;

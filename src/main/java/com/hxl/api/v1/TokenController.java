@@ -47,8 +47,8 @@ public class TokenController {
     @PostMapping("/verify")
     public Map<String, Boolean> verify(@RequestBody TokenWithVerifyDTO token) {
         Map<String, Boolean> map = new HashMap<>(4);
-        Boolean valid = JwtToken.verify(token.getToken());
-        map.put("valid", valid);
+        Boolean valid = JwtToken.verifyToken(token.getToken());
+        map.put("is_valid", valid);
         return map;
     }
 
