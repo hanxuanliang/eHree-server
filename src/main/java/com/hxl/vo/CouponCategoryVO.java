@@ -23,7 +23,9 @@ public class CouponCategoryVO extends CouponPureVO {
 
     public CouponCategoryVO(Coupon coupon) {
         super(coupon);
+        // 1. coupon 中就已经携带了对应类目的list，取出来即可
         List<Category> categories = coupon.getCategoryList();
+        // 2. 然后在 foreach 中去把获取的 categories 中的每一项加到 categoryPureVOList 中
         categories.forEach(category -> {
             CategoryPureVO categoryPureVO = new CategoryPureVO(category);
             categoryPureVOList.add(categoryPureVO);

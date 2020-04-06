@@ -97,6 +97,13 @@ public class CouponController {
         return CouponPureVO.getList(couponList);
     }
 
+    /**
+     * 在结算的时候，有些商品是不满足优惠券下的商品类别限制的，也就不能单纯对价格进行加和
+     *
+     * @date: 2020/4/6 22:46
+     */
+    @ScopeLevel
+    @PostMapping("/myself/available/with_category")
     public List<CouponCategoryVO> getUserCouponWithCategory() {
         User user = LocalUser.getLocalUser();
         List<Coupon> coupons = couponService.getMyAvailableCoupons(user.getId());

@@ -50,6 +50,11 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     List<Coupon> findByWholeStore(Boolean isWhole, Date now);
 
 
+    /**
+     * 注意：【orderId 在优惠券未使用的情况下，一定是 null，这个条件一定要带上】
+     *
+     * @date: 2020/4/6 22:35
+     */
     @Query("select c from Coupon c \n" +
             "join UserCoupon uc on c.id = uc.couponId\n" +
             "join User u on u.id = uc.userId\n" +
@@ -61,6 +66,10 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     List<Coupon> findMyAvailable(Long uid, Date now);
 
 
+    /**
+     * 这里的 orderId 一定是 not null，因为你使用了优惠券，一定是携带在订单上
+     * @date: 2020/4/6 22:37
+     */
     @Query("select c from Coupon c \n" +
             "join UserCoupon uc on c.id = uc.couponId\n" +
             "join User u on u.id = uc.userId\n" +
@@ -72,6 +81,14 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     List<Coupon> findMyUsed(Long uid, Date now);
 
 
+    /**
+     * 1. 但是在这里，orderId 为 null，因为这是优惠券自身的过期，既然过期就不会和订单绑定
+     * 2. 优惠券结束时间 < 当前时间，就说明它已经过期了
+     * 3. 只要优惠券不是已经使用的情况下，就有可能会过期(也就是 过期+未使用)
+     * 4. 绝对不能使用 uc.status = 3 去判断
+     *
+     * @date: 2020/4/6 22:38
+     */
     @Query("select c from Coupon c \n" +
             "join UserCoupon uc on c.id = uc.couponId\n" +
             "join User u on u.id = uc.userId\n" +
