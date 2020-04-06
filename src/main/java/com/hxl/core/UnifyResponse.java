@@ -1,5 +1,6 @@
 package com.hxl.core;
 
+import com.hxl.exception.CreateSuccess;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,9 @@ public class UnifyResponse {
     private String msg;
 
     private String request;
+
+    public static void createSuccess(int code) {
+        throw new CreateSuccess(0);
+    }
+
 }

@@ -36,7 +36,7 @@ public class UserCoupon extends BaseEntity {
     private Date createTime;
 
     // 用户使用优惠劵的状态：已领取未使用 已领取已使用 已过期
-    private Long status;
+    private Integer status;
 
     // 订单ID
     private Long orderId;

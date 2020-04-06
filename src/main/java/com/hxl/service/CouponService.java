@@ -1,5 +1,6 @@
 package com.hxl.service;
 
+import com.hxl.core.enums.CouponStatus;
 import com.hxl.exception.NotFoundException;
 import com.hxl.exception.ParameterException;
 import com.hxl.model.Activity;
@@ -57,14 +58,37 @@ public class CouponService {
         }
 
         // 3. 去检验一下 DB 中有没有 uid-couponId 连接的数据，如果有说明已经领取了，就报错
+        // 【需要注意的是，这里是 ifPresent，如果存在就报错，不存在就跳过异常】
         userCouponRepository.findFirstByUserIdAndAndCouponId(uid, couponId)
-                .orElseThrow(() -> new ParameterException(40006));
+                .ifPresent((userCoupon) -> {throw new ParameterException(40006);});
 
         // 4. 创建 usercoupon，写入 DB 中
         UserCoupon userCouponNew = UserCoupon.builder()
                 .userId(uid)
                 .couponId(couponId)
+                .status(CouponStatus.AVAILABLE.getValue())
+                .createTime(now)
                 .build();
         userCouponRepository.save(userCouponNew);
+    }
+
+    /**
+     * 以下 3个method 为个人优惠券部分
+     *
+     * @date: 2020/4/6 18:11
+     */
+    public List<Coupon> getMyAvailableCoupons(Long uid) {
+        Date now = new Date();
+        return couponRepository.findMyAvailable(uid, now);
+    }
+
+    public List<Coupon> getMyUsedCoupons(Long uid) {
+        Date now = new Date();
+        return couponRepository.findMyUsed(uid, now);
+    }
+
+    public List<Coupon> getMyExpiredCoupons(Long uid) {
+        Date now = new Date();
+        return couponRepository.findMyExpired(uid, now);
     }
 }

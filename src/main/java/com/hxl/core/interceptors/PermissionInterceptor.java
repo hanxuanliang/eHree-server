@@ -40,6 +40,7 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
         if (StringUtils.isEmpty(bearerToken)) {
             throw new UnAuthenticatedException(10004);
         }
+        // Bearer token
         if (!bearerToken.startsWith("Bearer")) {
             throw new UnAuthenticatedException(10004);
         }

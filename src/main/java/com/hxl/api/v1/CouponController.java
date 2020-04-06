@@ -1,16 +1,22 @@
 package com.hxl.api.v1;
 
 import com.hxl.core.LocalUser;
+import com.hxl.core.UnifyResponse;
 import com.hxl.core.annotations.ScopeLevel;
+import com.hxl.core.enums.CouponStatus;
+import com.hxl.exception.ParameterException;
 import com.hxl.model.Coupon;
 import com.hxl.model.User;
 import com.hxl.service.CouponService;
+import com.hxl.vo.CouponCategoryVO;
 import com.hxl.vo.CouponPureVO;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 【本次的重构，将优惠劵作为api嵌入ehree中，不会作为模块单独输出】
@@ -55,8 +61,48 @@ public class CouponController {
      * @date: 2020/4/6 14:20
      */
     @ScopeLevel
-    @PostMapping("/collect/{id}")
-    public void collectCoupon(@PathVariable Long id) {
+    @PostMapping("/collect/{couponId}")
+    public void collectCoupon(@PathVariable Long couponId) {
         Long uid = LocalUser.getLocalUser().getId();
+        couponService.collectOneCoupon(uid, couponId);
+        // 要注意的问题是内部是以报错的形式返回的，如果在报错机制有log收集，这里就会出现成功的结果会在收集错误的log中出现
+        UnifyResponse.createSuccess(0);
+    }
+
+    /**
+     * status 不能很清楚的去表示当前的优惠券的状态
+     * 因为：延时订单支付 --> 库存，优惠券归还机制【未付款在订单支付过期后返回给user】
+     * 但是这种延时异步修改，不一定成功，所以不能完全相信
+     *
+     * @date: 2020/4/6 18:03
+     */
+    @ScopeLevel
+    @GetMapping("/myself/by/status/{status}")
+    public List<CouponPureVO> getMyCouponByStatus(@PathVariable Integer status) {
+        Long uid = LocalUser.getLocalUser().getId();
+        List<Coupon> couponList = new ArrayList<>();
+        switch (CouponStatus.toType(status)) {
+            case AVAILABLE:
+                couponList = couponService.getMyAvailableCoupons(uid);
+                break;
+            case USED:
+                couponList = couponService.getMyUsedCoupons(uid);
+                break;
+            case EXPIRED:
+                couponList = couponService.getMyExpiredCoupons(uid);
+                break;
+            default:
+                throw new ParameterException(40001);
+        }
+        return CouponPureVO.getList(couponList);
+    }
+
+    public List<CouponCategoryVO> getUserCouponWithCategory() {
+        User user = LocalUser.getLocalUser();
+        List<Coupon> coupons = couponService.getMyAvailableCoupons(user.getId());
+        if (coupons.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return coupons.stream().map(CouponCategoryVO::new).collect(Collectors.toList());
     }
 }
