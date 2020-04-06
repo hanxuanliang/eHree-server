@@ -10,7 +10,8 @@ import javax.persistence.Id;
 import java.util.Date;
 
 /**
- * @Description:
+ * 多对多形成的第三张表
+ *
  * @Author: hanxuanliang
  * @Date: 2020/4/5 10:51
  */

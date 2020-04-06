@@ -16,7 +16,13 @@ import java.util.List;
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
     /**
-     * 通过优惠券类别以及使用时间查询特定的优惠劵
+     * 通过【商品分类】以及使用【活动时间】(有一个过期时间) 查询特定的优惠劵
+     *
+     * 原生SQL：
+     * 【select * from coupon
+     * join coupon_category  on coupon.id = coupon_category.coupon_id
+     * join category  on coupon_category.category_id = category.id
+     * where category.id = 15】
      *
      * @param categoryId 优惠券类别
      * @param now       时间段
@@ -24,13 +30,14 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
      * @date: 2020/4/5 13:44
      */
     @Query("select c from Coupon c\n" +
-            " join c.categoryList clist join Activity a on a.id = c.activityId\n" +
-            " where clist.id = :categoryId\n" +
-            " and a.startTime < :now and a.endTime > :now")
+            "join c.categoryList clist \n" +
+            "join Activity a on a.id = c.activityId\n" +
+            "where clist.id = :categoryId\n" +
+            "and a.startTime < :now and a.endTime > :now")
     List<Coupon> findByCategory(Long categoryId, Date now);
 
     /**
-     * 全场券
+     * 全场券 使用【活动时间】(有一个过期时间) 查询特定的优惠劵
      *
      * @param isWhole 全场券标志
      * @param now    时间段

@@ -57,8 +57,8 @@ public class Coupon extends BaseEntity {
     // 是否为全场劵
     private Boolean wholeStore;
 
-    // TODO mappedBy 作用未知，待查找
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = ("couponList"))
+    // mappedBy 是做双向多对多的连接【而且是被维护端】
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "couponList")
     private List<Category> categoryList;
 
 }

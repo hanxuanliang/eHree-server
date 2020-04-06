@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 活动 模型表
+ * 活动 模型表【优惠券的基本组织单位】
  *
  * @Author: hanxuanliang
  * @Date: 2020/4/4 21:57

@@ -33,6 +33,7 @@ public class Category extends BaseEntity{
 
     private Long index;
 
+    // 双向多对多如果需要规范生成的第三张表，就需要标注 @JoinTable
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "coupon_category",
             joinColumns = @JoinColumn(name = "category_id"),

@@ -62,6 +62,13 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
         super.postHandle(request, response, handler, modelAndView);
     }
 
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        // 一定要在拦截器完成的时候把这个 localUser 手动删除【阿里规范】
+        LocalUser.removeLocalUser();
+        super.afterCompletion(request, response, handler, ex);
+    }
+
     private Optional<ScopeLevel> getScopeLevel(Object handler) {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -76,10 +83,9 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
 
     private void setLocalUser(Map<String, Claim> claimMap) {
         Long uid = claimMap.get("uid").asLong();
-        // TODO scope 携带再考虑
-        // Integer scope = claimMap.get("scope").asInt();
+        Integer scope = claimMap.get("scope").asInt();
         User user = userService.getUserById(uid);
-        LocalUser.setLocalUser(user);
+        LocalUser.setLocalUser(user, scope);
     }
 
     private Boolean hasPermission(ScopeLevel scopeLevel, Map<String, Claim> map) {

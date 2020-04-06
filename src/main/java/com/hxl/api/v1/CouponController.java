@@ -1,7 +1,9 @@
 package com.hxl.api.v1;
 
+import com.hxl.core.LocalUser;
 import com.hxl.core.annotations.ScopeLevel;
 import com.hxl.model.Coupon;
+import com.hxl.model.User;
 import com.hxl.service.CouponService;
 import com.hxl.vo.CouponPureVO;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +45,18 @@ public class CouponController {
         return CouponPureVO.getList(couponList);
     }
 
-    // 针对个人的优惠券
-    @ScopeLevel()
-    @PostMapping("/collect/{uid}")
-    public void collectCoupon(@PathVariable Long uid) {
-
+    /**
+     * 针对个人的优惠券【此处的id为优惠券的id】
+     *
+     * 1. 不能是 uid，会出现超权的问题，因为你登录了，不代表你就可以访问一个别人的uid；
+     * 2. 而且我们知道，在token的map里面其实已经携带了uid，所以没必要显示去传uid
+     * 3. 所以我们应该是从token中去获取uid来查询该uid下的coupon
+     *
+     * @date: 2020/4/6 14:20
+     */
+    @ScopeLevel
+    @PostMapping("/collect/{id}")
+    public void collectCoupon(@PathVariable Long id) {
+        Long uid = LocalUser.getLocalUser().getId();
     }
 }
