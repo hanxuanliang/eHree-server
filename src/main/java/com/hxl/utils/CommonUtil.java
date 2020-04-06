@@ -2,6 +2,8 @@ package com.hxl.utils;
 
 import com.hxl.bo.PageCounter;
 
+import java.util.Date;
+
 /**
  * @Description:
  * @Author: hanxuanliang
@@ -16,5 +18,13 @@ public class CommonUtil {
                 .page(pageNum)
                 .count(count)
                 .build();
+    }
+
+    public static Boolean isInTimeLime(Date now, Date start, Date end) {
+        long nowTime = now.getTime();
+        long startTime = start.getTime();
+        long endTime = end.getTime();
+
+        return nowTime < endTime && nowTime > startTime;
     }
 }

@@ -3,6 +3,8 @@ package com.hxl.repository;
 import com.hxl.model.Activity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 /**
  * 活动 dao层
  *
@@ -19,4 +21,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
      * @date: 2020/4/5 11:00
      */
     Activity findByName(String name);
+
+    Optional<Activity> findByCouponListId(Long couponId);
 }
