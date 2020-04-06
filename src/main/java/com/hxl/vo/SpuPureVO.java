@@ -13,8 +13,6 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
 public class SpuPureVO {
 
     private Long id;

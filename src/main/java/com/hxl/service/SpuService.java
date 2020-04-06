@@ -24,7 +24,9 @@ public class SpuService {
     @Resource
     private SpuRepository spuRepository;
 
-    public Spu getSpu(Long id) { return spuRepository.findOneById(id); }
+    public Spu getSpu(Long id) {
+        return spuRepository.findOneById(id);
+    }
 
     public Page<Spu> getLatestPagingSpu(Integer pageNum, Integer size) {
         Pageable page = PageRequest.of(pageNum, size, Sort.by("updateTime").descending());

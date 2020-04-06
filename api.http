@@ -13,4 +13,48 @@ Content-Type: application/json
   "repeatPassword": "123456"
 }
 
+### banner 查询 【ok】
+GET {{baseUrl}}/v1/banner/name/b-2
+
+
+### spu id查询 【ok】
+GET {{baseUrl}}/v1/spu/id/2/detail
+Content-Type: application/json
+
+### spu latest查询 【ok】/v1/spu/latest
+GET {{baseUrl}}
+Content-Type: application/json
+
+
+### theme 多个name查询 【ok】
+GET {{baseUrl}}/v1/theme/by/names?names=t-1,t-2,t-3
+Content-Type: application/json
+
+### theme 单个name查询并且携带 spu 数据 【ok】
+GET {{baseUrl}}/v1/theme/name/t-3/with_spu
+Content-Type: application/json
+
+
+### category 所有分类查询
+GET {{baseUrl}}/v1/category/all
+Content-Type: application/json
+
+### category 九宫格分类查询
+GET {{baseUrl}}/v1/category/grid/all
+Content-Type: application/json
+
+
+### activity name查询
+GET {{baseUrl}}/v1/activity/name/a-2
+Content-Type: application/json
+
+
+### coupon 给定类目id来查询优惠劵
+GET {{baseUrl}}/v1/coupon/by/category/15
+Content-Type: application/json
+
+### coupon 全场券
+GET {{baseUrl}}/v1/coupon/whole_store
+Content-Type: application/json
+
 ###

@@ -35,7 +35,7 @@ public class Spu extends BaseEntity{
 
     private String title;
 
-    private String subTitle;
+    private String subtitle;
 
     private Long categoryId;
 

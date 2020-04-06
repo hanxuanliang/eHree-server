@@ -41,7 +41,7 @@ public class Activity extends BaseEntity {
     private String entranceImg;
 
     // 活动顶部图片
-    private String topImg;
+    private String internalTopImg;
 
     // 活动名称
     private String name;

@@ -30,7 +30,7 @@ public class SpuController {
     private SpuService spuService;
 
     @GetMapping("/id/{id}/detail")
-    public Spu getDetail(@PathVariable @NotBlank Long id) {
+    public Spu getDetail(@PathVariable @Positive Long id) {
         Spu spu = spuService.getSpu(id);
         if (spu == null) {
             throw new NotFoundException(30003);

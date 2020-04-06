@@ -30,9 +30,6 @@ public class WxAuthenticationService {
     @Resource
     private ObjectMapper mapper;
 
-    @Resource
-    private RestTemplate restTemplate;
-
     @Value("${wx.code2session}")
     private String code2SessionUrl;
 
@@ -44,6 +41,7 @@ public class WxAuthenticationService {
 
     public String code2Session(String code) {
         String url = MessageFormat.format(code2SessionUrl, appid, appsecret, code);
+        RestTemplate restTemplate = new RestTemplate();
         Map<String, Object> session = null;
         String sessionMsg = restTemplate.getForObject(url, String.class);
         try {

@@ -23,7 +23,7 @@ public class CouponController {
     @Resource
     private CouponService couponService;
 
-    // 根据具体商品类目查询
+    // 根据具体商品类目查询【categoryId 是二级分类：具体见 `coupon_category` 这个表的数据】
     @GetMapping("/by/category/{categoryId}")
     public List<CouponPureVO> getCouponListByCategory(@PathVariable Long categoryId) {
         List<Coupon> couponList = couponService.getByCategory(categoryId);
@@ -43,6 +43,7 @@ public class CouponController {
         return CouponPureVO.getList(couponList);
     }
 
+    // 针对个人的优惠券
     @ScopeLevel()
     @PostMapping("/collect/{uid}")
     public void collectCoupon(@PathVariable Long uid) {
