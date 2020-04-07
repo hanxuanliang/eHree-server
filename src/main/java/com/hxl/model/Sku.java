@@ -1,5 +1,8 @@
 package com.hxl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.hxl.utils.GenericAndJson;
 import com.hxl.utils.SuperGenericAndJson;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +14,11 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * sku【带有具体规格的商品】
@@ -62,6 +68,13 @@ public class Sku extends BaseEntity {
     // 由于原价和折扣价，在这里多加一个函数来直接获取实际价格
     public BigDecimal getActualPrice() {
         return discountPrice == null ? price : discountPrice;
+    }
+
+    @JsonIgnore
+    public List<String> getSpecValueList() {
+        return specs.stream()
+                .map(Spec::getValue)
+                .collect(Collectors.toList());
     }
 
 }
