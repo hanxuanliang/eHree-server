@@ -59,4 +59,9 @@ public class Sku extends BaseEntity {
 
     private Long stock;
 
+    // 由于原价和折扣价，在这里多加一个函数来直接获取实际价格
+    public BigDecimal getActualPrice() {
+        return discountPrice == null ? price : discountPrice;
+    }
+
 }

@@ -1,7 +1,6 @@
 package com.hxl.repository;
 
 import com.hxl.model.Sku;
-import com.hxl.model.Spu;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

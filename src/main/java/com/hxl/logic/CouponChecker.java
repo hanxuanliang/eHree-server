@@ -1,15 +1,19 @@
 package com.hxl.logic;
 
+import com.hxl.bo.SkuOrderBO;
 import com.hxl.core.calculate.IMoneyDiscount;
 import com.hxl.core.enums.CouponType;
 import com.hxl.exception.ForbiddenException;
 import com.hxl.exception.ParameterException;
+import com.hxl.model.Category;
 import com.hxl.model.Coupon;
 import com.hxl.model.UserCoupon;
 import com.hxl.utils.CommonUtil;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 优惠券 业务验证类
@@ -26,8 +30,6 @@ public class CouponChecker {
 
     private Coupon coupon;
 
-    private UserCoupon userCoupon;
-
     private IMoneyDiscount iMoneyDiscount;
 
     public CouponChecker(Coupon coupon, IMoneyDiscount iMoneyDiscount) {
@@ -38,7 +40,6 @@ public class CouponChecker {
     @Deprecated
     public CouponChecker(Coupon coupon, UserCoupon userCoupon) {
         this.coupon = coupon;
-        this.userCoupon = userCoupon;
     }
 
     @Deprecated
@@ -87,9 +88,57 @@ public class CouponChecker {
 
     }
 
-    // 当前的优惠券是否真的能被使用
-    public void canBeUsed() {
+    // 当前的优惠券是否真的能被使用，主要是是分类优惠券的使用限度
+    public void canBeUsed(List<SkuOrderBO> skuOrderBOList, BigDecimal serverTotalPrice) {
+        // 所需数据：sku-price，sku-count，sku-categor，coupo-category
+        BigDecimal orderCategoryPrice;
 
+        // 1. 全场券逻辑，所有的分类都是可以使用的
+        if (coupon.getWholeStore()) {
+            orderCategoryPrice = serverTotalPrice;
+        } else {
+            // 2. 普通方法去做：先for类别，再在类别里面for sku 计算金额
+            List<Long> cidList = coupon.getCategoryList().stream()
+                    .map(Category::getId)
+                    .collect(Collectors.toList());
+            orderCategoryPrice = getSumByCategoryList(skuOrderBOList, cidList);
+        }
+        couponCanBeUsed(orderCategoryPrice);
     }
 
+    // 优惠券是不是能用
+    private void couponCanBeUsed(BigDecimal orderCategoryPrice) {
+        switch (CouponType.toType(coupon.getType())) {
+            case FULL_OFF:
+            case FULL_MINUS:
+                int compareTwo = coupon.getFullMoney().compareTo(orderCategoryPrice);
+                if (compareTwo > 0) {
+                    throw new ParameterException(40008);
+                }
+                break;
+            // 无门槛劵当然到处都是能用的啦！不做特殊处理
+            case NO_THRESHOLD_MINUS:
+                break;
+            default:
+                throw new ParameterException(40009);
+        }
+    }
+
+    // 循环 coupon 中携带的 categoryIdList，执行每一个品类下的sku金额计算
+    private BigDecimal getSumByCategoryList(List<SkuOrderBO> skuOrderBOList, List<Long> cidList) {
+
+        return cidList.stream()
+                .map(cid -> getSumByCategoryId(skuOrderBOList, cid))
+                .reduce(BigDecimal::add)
+                .orElse(new BigDecimal("0"));
+    }
+
+    private BigDecimal getSumByCategoryId(List<SkuOrderBO> skuOrderBOList, Long cid) {
+
+        return skuOrderBOList.stream()
+                .filter(sku -> sku.getCategoryId().equals(cid))
+                .map(SkuOrderBO::getTotalPrice)
+                .reduce(BigDecimal::add)
+                .orElse(new BigDecimal("0"));
+    }
 }
