@@ -1,16 +1,22 @@
 package com.hxl.service;
 
 import com.hxl.core.calculate.IMoneyDiscount;
+import com.hxl.core.enums.OrderStatus;
 import com.hxl.dto.OrderDTO;
 import com.hxl.dto.SkuInfoDTO;
 import com.hxl.exception.NotFoundException;
 import com.hxl.exception.ParameterException;
 import com.hxl.logic.CouponChecker;
+import com.hxl.logic.OrderChecker;
 import com.hxl.model.Coupon;
+import com.hxl.model.Order;
 import com.hxl.model.Sku;
 import com.hxl.model.UserCoupon;
 import com.hxl.repository.CouponRepository;
+import com.hxl.repository.OrderRepository;
 import com.hxl.repository.UserCouponRepository;
+import com.hxl.utils.OrderUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,9 +43,18 @@ public class OrderService {
     private UserCouponRepository userCouponRepository;
 
     @Resource
+    private OrderRepository orderRepository;
+
+    @Resource
     private IMoneyDiscount iMoneyDiscount;
 
-    public void isOk(Long uid, OrderDTO orderDTO) {
+    @Value("${ehree.order.max-sku-limit}")
+    private int maxSkuLimit;
+
+    @Value("${ehree.order.pay-time-limit}")
+    private Integer payTimeLimit;
+
+    public OrderChecker isOk(Long uid, OrderDTO orderDTO) {
         if (orderDTO.getFinalTotalPrice().compareTo(new BigDecimal("0.01")) <= 0) {
             throw new ParameterException(50001);
         }
@@ -60,5 +75,28 @@ public class OrderService {
             couponChecker = new CouponChecker(coupon, iMoneyDiscount);
         }
 
+        OrderChecker orderChecker = new OrderChecker(
+                orderDTO, skuList, couponChecker, maxSkuLimit);
+        orderChecker.isOk();
+        return orderChecker;
+    }
+
+    // 下单业务逻辑
+    public Long placeOrder(Long uid, OrderDTO orderDTO, OrderChecker orderChecker) {
+        Order order = Order.builder()
+                .orderNo(OrderUtil.uuOrderNo())
+                .totalPrice(orderDTO.getTotalPrice())
+                .finalTotalPrice(orderDTO.getFinalTotalPrice())
+                .userId(uid)
+                .totalCount(orderChecker.getTotalCount().longValue())
+                .snapImg(orderChecker.getLeaderImg())
+                .snapTitle(orderChecker.getLeaderTitle())
+                .status(OrderStatus.UNPAID.value())
+                .build();
+        order.setSnapAddress(orderDTO.getAddress());
+        order.setSnapItems(orderChecker.getOrderSkuList());
+
+        orderRepository.save(order);
+        return order.getId();
     }
 }

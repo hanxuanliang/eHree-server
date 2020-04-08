@@ -19,6 +19,7 @@ spring:
 
 ehree:
   api-basepackage: com.hxl.api
+  year-codes: A,B,C,D,E,F,G,H,I,J,K,L
 
 logging:
   pattern:

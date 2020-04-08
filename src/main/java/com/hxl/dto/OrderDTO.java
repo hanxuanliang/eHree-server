@@ -1,9 +1,11 @@
 package com.hxl.dto;
 
+import com.hxl.utils.SuperGenericAndJson;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Convert;
 import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.util.List;

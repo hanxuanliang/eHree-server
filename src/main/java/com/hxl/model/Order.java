@@ -1,10 +1,14 @@
 package com.hxl.model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.hxl.dto.OrderAddressDTO;
+import com.hxl.utils.GenericAndJson;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 订单 模型表
@@ -59,5 +63,30 @@ public class Order extends BaseEntity{
 
     // 订单状态：下单，支付 。。。
     private Integer status;
+
+    // obj ==> json  json ==> obj
+    public OrderAddressDTO getSnapAddress() {
+        if (snapAddress == null) {
+            return null;
+        }
+        return GenericAndJson.jsonToObject(snapAddress,
+                new TypeReference<OrderAddressDTO>() {});
+    }
+
+    public void setSnapAddress(OrderAddressDTO address) {
+        this.snapAddress = GenericAndJson.objectToJson(address);
+    }
+
+    public void setSnapItems(List<OrderSku> orderSkuList) {
+        if (orderSkuList == null) {
+            return;
+        }
+        this.snapItems = GenericAndJson.objectToJson(orderSkuList);
+    }
+
+    public List<OrderSku> getSnapItems() {
+        return GenericAndJson.jsonToObject(this.snapItems,
+                new TypeReference<List<OrderSku>>() {});
+    }
 
 }
