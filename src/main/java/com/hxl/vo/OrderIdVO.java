@@ -1,8 +1,6 @@
 package com.hxl.vo;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @Description:
@@ -12,6 +10,10 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderIdVO {
+
+    private Long id;
 
 }

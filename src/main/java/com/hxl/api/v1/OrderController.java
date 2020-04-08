@@ -3,6 +3,7 @@ package com.hxl.api.v1;
 import com.hxl.core.LocalUser;
 import com.hxl.core.annotations.ScopeLevel;
 import com.hxl.dto.OrderDTO;
+import com.hxl.logic.OrderChecker;
 import com.hxl.service.OrderService;
 import com.hxl.vo.OrderIdVO;
 import org.springframework.validation.annotation.Validated;
@@ -31,8 +32,11 @@ public class OrderController {
     @PutMapping("")
     public OrderIdVO placeOrder(@RequestBody OrderDTO orderDTO) {
         Long uid = LocalUser.getLocalUser().getId();
+        OrderChecker orderChecker = orderService.isOk(uid, orderDTO);
 
-        return null;
+        Long orderId = orderService.placeOrder(uid, orderDTO, orderChecker);
+
+        return new OrderIdVO(orderId);
     }
 
 }

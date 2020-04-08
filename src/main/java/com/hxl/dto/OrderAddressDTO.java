@@ -20,7 +20,7 @@ public class OrderAddressDTO {
 
     private String city;
 
-    private String country;
+    private String county;
 
     private String mobile;
 

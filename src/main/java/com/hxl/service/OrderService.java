@@ -4,20 +4,21 @@ import com.hxl.core.calculate.IMoneyDiscount;
 import com.hxl.core.enums.OrderStatus;
 import com.hxl.dto.OrderDTO;
 import com.hxl.dto.SkuInfoDTO;
+import com.hxl.exception.ForbiddenException;
 import com.hxl.exception.NotFoundException;
 import com.hxl.exception.ParameterException;
+import com.hxl.exception.ServerErrorException;
 import com.hxl.logic.CouponChecker;
 import com.hxl.logic.OrderChecker;
-import com.hxl.model.Coupon;
-import com.hxl.model.Order;
-import com.hxl.model.Sku;
-import com.hxl.model.UserCoupon;
+import com.hxl.model.*;
 import com.hxl.repository.CouponRepository;
 import com.hxl.repository.OrderRepository;
+import com.hxl.repository.SkuRepository;
 import com.hxl.repository.UserCouponRepository;
 import com.hxl.utils.OrderUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -46,6 +47,9 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Resource
+    private SkuRepository skuRepository;
+
+    @Resource
     private IMoneyDiscount iMoneyDiscount;
 
     @Value("${ehree.order.max-sku-limit}")
@@ -70,7 +74,9 @@ public class OrderService {
         if (couponId != null) {
             Coupon coupon = couponRepository.findById(couponId)
                     .orElseThrow(() -> new NotFoundException(40004));
-            UserCoupon userCoupon = userCouponRepository.findFirstByUserIdAndAndCouponId(uid, couponId)
+            // 检测 coupon-status = 1 的优惠券
+            UserCoupon userCoupon = userCouponRepository
+                    .findFirstByUserIdAndAndCouponIdandAndStatusaAndOrderId(uid, couponId, 1, null)
                     .orElseThrow(() -> new NotFoundException(50006));
             couponChecker = new CouponChecker(coupon, iMoneyDiscount);
         }
@@ -81,7 +87,13 @@ public class OrderService {
         return orderChecker;
     }
 
-    // 下单业务逻辑
+    /**
+     * 下单业务逻辑
+     * 加事务的原因：存在多个数据库调用操作，需要让多个操作一并成功，而不是只成功一部分，失败就回滚
+     *
+     * @date: 2020/4/8 10:26
+     */
+    @Transactional(rollbackFor = ServerErrorException.class)
     public Long placeOrder(Long uid, OrderDTO orderDTO, OrderChecker orderChecker) {
         Order order = Order.builder()
                 .orderNo(OrderUtil.uuOrderNo())
@@ -97,6 +109,59 @@ public class OrderService {
         order.setSnapItems(orderChecker.getOrderSkuList());
 
         orderRepository.save(order);
+        // 1. 预减库存
+        reduceStock(orderChecker);
+        // 2. 核销优惠券
+        if (orderDTO.getCouponId() != null) {
+            writeOffCoupon(orderDTO.getCouponId(), order.getId(), uid);
+        }
+        // TODO 3. 加入消息队列，做延迟消息处理
         return order.getId();
+    }
+
+    /**
+     * 预减库存。可能会说，之前的orderchecker不是做了库存检测吗？
+     * 之前的库存检测只是检测，并没有减库存，如果同时一个时刻有多个订单到来，都通过了检测。
+     * 但是实际总的订单中sku数量远远大于库存，就会有超卖的现象。
+     * 因为下单这种多线程的情况，去访问一个共享变量，就一定会出现数量不一致的情况。【JMM，联系这个】
+     * 而且多线程情况下，还有可能会有乱序执行的问题
+     * 所以在此处要做库存预减。
+     * 【这个地方一定要注意多线程的问题，不要再查询再判断，本质并没有解决并发的问题】
+     *
+     * 第二点：
+     *      java中加锁，在分布式的情况下是不能保证数据库的资源顺序访问的；
+     *      在多个java执行中，只能保证在单个java程序的顺序执行，在多个java执行中不行；
+     *      所以也就不能保证数据库访问的顺序性。
+     *      所以，要保证数据库的资源访问有序性，必须要在数据库上加锁。
+     * 第三点：
+     *      事务 != 锁，事务只是保证执行完成性，锁是资源访问有序性
+     *
+     * @date: 2020/4/8 9:08
+     */
+    private void reduceStock(OrderChecker orderChecker) {
+        // 1. 正常
+        // 2. 负数
+        // 3. 多个订单来的时候，有的订单不成功
+        // 4. 一个订单加锁，其他订单排队【数据库行锁，java加锁】
+        List<OrderSku> orderSkuList = orderChecker.getOrderSkuList();
+        for (OrderSku orderSku: orderSkuList) {
+            int result = skuRepository.reduceStock(orderSku.getId(), orderSku.getCount().longValue());
+            if (result != 1) {
+                throw new ParameterException(50003);
+            }
+        }
+    }
+
+    /**
+     * 关注 usercoupon 这个模型表，看表需要什么字段，然后修改什么字段set什么字段就知道需求了
+     *
+     *
+     * @date: 2020/4/8 10:36
+     */
+    private void writeOffCoupon(Long couponId, Long orderId, Long uid) {
+        int result = userCouponRepository.writeOff(couponId, orderId, uid);
+        if (result != 1) {
+            throw new ForbiddenException(40012);
+        }
     }
 }

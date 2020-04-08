@@ -2,6 +2,8 @@ package com.hxl.repository;
 
 import com.hxl.model.UserCoupon;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -12,5 +14,16 @@ import java.util.Optional;
  */
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
-    Optional<UserCoupon> findFirstByUserIdAndAndCouponId(Long uid, Long couponId);
+    Optional<UserCoupon> findFirstByUserIdAndAndCouponIdandAndStatusaAndOrderId(Long uid, Long couponId, int status, Long orderId);
+
+    Optional<UserCoupon> findFirstByUserIdAndAndCouponIdandAndStatus(Long uid, Long couponId, int status);
+
+    @Modifying
+    @Query("update UserCoupon uc \n" +
+            "set uc.status = 2, uc.orderId = :orderId\n" +
+            "where uc.userId = :uid\n" +
+            "and uc.couponId = :couponId\n" +
+            "and uc.status = 1\n" +
+            "and uc.orderId is null")
+    int writeOff(Long couponId, Long orderId, Long uid);
 }

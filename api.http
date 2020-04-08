@@ -57,4 +57,25 @@ Content-Type: application/json
 GET {{baseUrl}}/v1/coupon/whole_store
 Content-Type: application/json
 
-###
+### 下单
+POST {{baseUrl}}/v1/order
+Content-Type: application/json
+
+{
+  "total_price": 2798,
+  "final_total_price": 2598,
+  "coupon_id": 7,
+  "sku_info_list": [
+    { "id": 30, "count": 2 }
+  ],
+  "address": {
+    "username": "zhansan",
+    "national_code": "51000",
+    "postal_name": "51000",
+    "city": "shanghai",
+    "priovince": "shanghai",
+    "county": "浦东新区",
+    "detail": "1350号",
+    "mobile": "010-868686886"
+  }
+}

@@ -2,6 +2,8 @@ package com.hxl.repository;
 
 import com.hxl.model.Sku;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -14,4 +16,11 @@ import java.util.List;
 public interface SkuRepository extends JpaRepository<Sku, Long> {
 
     List<Sku> findAllByIdIn(List<Long> ids);
+
+    // 使用了乐观锁，有效解决预减库存
+    @Modifying
+    @Query("update Sku s set s.stock = s.stock - :quantity\n" +
+            "where s.id = :skuId\n" +
+            "and s.stock >= :quantity")
+    int reduceStock(Long skuId, Long quantity);
 }
