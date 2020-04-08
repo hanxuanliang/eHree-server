@@ -8,6 +8,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,6 +55,9 @@ public class Order extends BaseEntity{
 
     // 收货地址
     private String snapAddress;
+
+    // 订单过期时间，用来判断是 未支付 还是 已取消
+    private Date expiredTime;
 
     // 留给微信支付
     private String prepayId;

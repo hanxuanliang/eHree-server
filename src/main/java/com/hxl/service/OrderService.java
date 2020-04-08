@@ -15,6 +15,7 @@ import com.hxl.repository.CouponRepository;
 import com.hxl.repository.OrderRepository;
 import com.hxl.repository.SkuRepository;
 import com.hxl.repository.UserCouponRepository;
+import com.hxl.utils.CommonUtil;
 import com.hxl.utils.OrderUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +77,7 @@ public class OrderService {
         if (couponId != null) {
             Coupon coupon = couponRepository.findById(couponId)
                     .orElseThrow(() -> new NotFoundException(40004));
-            // 检测 coupon-status = 1 的优惠券
+            // 检测 coupon_status = 1 的优惠券
             UserCoupon userCoupon = userCouponRepository
                     .findFirstByUserIdAndAndCouponIdandAndStatusaAndOrderId(uid, couponId, 1, null)
                     .orElseThrow(() -> new NotFoundException(50006));
@@ -95,6 +98,13 @@ public class OrderService {
      */
     @Transactional(rollbackFor = ServerErrorException.class)
     public Long placeOrder(Long uid, OrderDTO orderDTO, OrderChecker orderChecker) {
+        // 当前时间 + 订单支付时间限制 = 订单过期时间，订单插入到db的瞬间插入，
+        // 之后的判断就是 now 与 expiredTime 比较，看是否要取消该订单
+        Calendar now = Calendar.getInstance();
+        // 当前的时间会在 now.add() 后改变，所以要在此处做一次拷贝
+        Calendar nowClone = (Calendar) now.clone();
+        Date expiredTime = CommonUtil.addSeconds(now, payTimeLimit).getTime();
+
         Order order = Order.builder()
                 .orderNo(OrderUtil.uuOrderNo())
                 .totalPrice(orderDTO.getTotalPrice())
@@ -104,9 +114,14 @@ public class OrderService {
                 .snapImg(orderChecker.getLeaderImg())
                 .snapTitle(orderChecker.getLeaderTitle())
                 .status(OrderStatus.UNPAID.value())
+                .expiredTime(expiredTime)
                 .build();
         order.setSnapAddress(orderDTO.getAddress());
         order.setSnapItems(orderChecker.getOrderSkuList());
+        // 之所以在这要手动赋值，是因为 createTime,expiredTime 的基准时间要一致，不然会有相对误差，倒是订单状态有误
+        // expiredTime = createTime + payTimeLimit 这个逻辑才是对的，所以createtime要和这个now一致，
+        // 既然一致，那就是在一个地方生成，那就都依靠java代码生成，而不是一个需要数据库，一个需要java代码
+        order.setCreateTime(nowClone.getTime());
 
         orderRepository.save(order);
         // 1. 预减库存
@@ -154,7 +169,6 @@ public class OrderService {
 
     /**
      * 关注 usercoupon 这个模型表，看表需要什么字段，然后修改什么字段set什么字段就知道需求了
-     *
      *
      * @date: 2020/4/8 10:36
      */

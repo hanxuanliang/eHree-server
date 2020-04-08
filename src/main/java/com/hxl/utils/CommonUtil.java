@@ -2,6 +2,7 @@ package com.hxl.utils;
 
 import com.hxl.bo.PageCounter;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -26,5 +27,10 @@ public class CommonUtil {
         long endTime = end.getTime();
 
         return nowTime < endTime && nowTime > startTime;
+    }
+
+    public static Calendar addSeconds(Calendar now, int seconds) {
+        now.add(Calendar.SECOND, seconds);
+        return now;
     }
 }
