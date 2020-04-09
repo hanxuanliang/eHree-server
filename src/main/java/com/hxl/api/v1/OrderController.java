@@ -1,18 +1,25 @@
 package com.hxl.api.v1;
 
+import com.hxl.bo.PageCounter;
 import com.hxl.core.LocalUser;
 import com.hxl.core.annotations.ScopeLevel;
 import com.hxl.dto.OrderDTO;
+import com.hxl.exception.NotFoundException;
 import com.hxl.logic.OrderChecker;
+import com.hxl.model.Order;
 import com.hxl.service.OrderService;
+import com.hxl.utils.CommonUtil;
 import com.hxl.vo.OrderIdVO;
+import com.hxl.vo.OrderPureVO;
+import com.hxl.vo.OrderSimpleVO;
+import com.hxl.vo.PagingVO;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Optional;
 
 /**
  * order api接口
@@ -28,6 +35,9 @@ public class OrderController {
     @Resource
     private OrderService orderService;
 
+    @Value("${ehree.order.pay-time-limit}")
+    private Long payTimeLimit;
+
     @ScopeLevel
     @PutMapping("")
     public OrderIdVO placeOrder(@RequestBody OrderDTO orderDTO) {
@@ -39,4 +49,36 @@ public class OrderController {
         return new OrderIdVO(orderId);
     }
 
+    @ScopeLevel
+    @PutMapping("/status/unpaid")
+    public PagingVO getUnpaid(@RequestParam(defaultValue = "0") Integer start,
+                                        @RequestParam(defaultValue = "10") Integer count) {
+        PageCounter page = CommonUtil.convertToPageParameter(start, count);
+        Page<Order> orderPage = orderService.getUnpaid(page.getPage(), page.getCount());
+        PagingVO pagingVO = new PagingVO(orderPage, OrderSimpleVO.class);
+        pagingVO.getItems().forEach(o -> ((OrderSimpleVO) o).setPeriod(payTimeLimit));
+        return pagingVO;
+    }
+
+    // All PAID DELIVERED FINISHED
+    @ScopeLevel
+    @PutMapping("/by/status/{status}")
+    public PagingVO getOrderByStatus(@PathVariable int status,
+                              @RequestParam(defaultValue = "0") Integer start,
+                              @RequestParam(defaultValue = "10") Integer count) {
+        PageCounter page = CommonUtil.convertToPageParameter(start, count);
+        Page<Order> orderPage = orderService.getOrderByStatus(status, page.getPage(), page.getCount());
+        PagingVO pagingVO = new PagingVO(orderPage, OrderSimpleVO.class);
+        pagingVO.getItems().forEach(o -> ((OrderSimpleVO) o).setPeriod(payTimeLimit));
+        return pagingVO;
+    }
+
+    // 查询订单详情
+    @ScopeLevel
+    @PutMapping("/detail/{id}")
+    public OrderPureVO getOrderByStatus(@PathVariable(name = "id") Long orderId) {
+        Optional<Order> detail = orderService.getDetailOfOrder(orderId);
+        return detail.map(o -> new OrderPureVO(o, payTimeLimit))
+                .orElseThrow(() -> { throw new NotFoundException(50009); });
+    }
 }

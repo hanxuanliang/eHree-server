@@ -57,8 +57,9 @@ public class Sku extends BaseEntity {
     private Long rootCategoryId;
 
     // 规格的设计【一个sku的规格是确定的，而且这里是数组里面包裹json字符串】
-    @Convert(converter = SuperGenericAndJson.class)
-    private List<Spec> specs;
+    // @Convert(converter = SuperGenericAndJson.class)
+    // FIXME 修改 specs 传递属性
+    private String specs;
 
     // 判断用户是否选择了一个完整的规格尺寸，看当前的code拼接和数据库的code字段是否相等
     private String code;
@@ -70,9 +71,23 @@ public class Sku extends BaseEntity {
         return discountPrice == null ? price : discountPrice;
     }
 
+    public List<Spec> getSpecs() {
+        if (this.specs == null) {
+            return Collections.emptyList();
+        }
+        return GenericAndJson.jsonToObject(this.specs, new TypeReference<List<Spec>>() {});
+    }
+
+    public void setSpecs(List<Spec> specs) {
+        if (specs == null) {
+            return;
+        }
+        this.specs = GenericAndJson.objectToJson(specs);
+    }
+
     @JsonIgnore
     public List<String> getSpecValueList() {
-        return specs.stream()
+        return getSpecs().stream()
                 .map(Spec::getValue)
                 .collect(Collectors.toList());
     }

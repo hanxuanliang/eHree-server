@@ -1,5 +1,6 @@
 package com.hxl.service;
 
+import com.hxl.core.LocalUser;
 import com.hxl.core.calculate.IMoneyDiscount;
 import com.hxl.core.enums.OrderStatus;
 import com.hxl.dto.OrderDTO;
@@ -18,6 +19,10 @@ import com.hxl.repository.UserCouponRepository;
 import com.hxl.utils.CommonUtil;
 import com.hxl.utils.OrderUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -115,13 +121,15 @@ public class OrderService {
                 .snapTitle(orderChecker.getLeaderTitle())
                 .status(OrderStatus.UNPAID.value())
                 .expiredTime(expiredTime)
+                .placedTime(nowClone.getTime())
                 .build();
         order.setSnapAddress(orderDTO.getAddress());
         order.setSnapItems(orderChecker.getOrderSkuList());
         // 之所以在这要手动赋值，是因为 createTime,expiredTime 的基准时间要一致，不然会有相对误差，倒是订单状态有误
         // expiredTime = createTime + payTimeLimit 这个逻辑才是对的，所以createtime要和这个now一致，
         // 既然一致，那就是在一个地方生成，那就都依靠java代码生成，而不是一个需要数据库，一个需要java代码
-        order.setCreateTime(nowClone.getTime());
+        // FIXME CreateTime 这个手动设置是无效的，因为在数据库中已经设置了自动赋值，所以手动赋值是无效的
+        // order.setCreateTime(nowClone.getTime());
 
         orderRepository.save(order);
         // 1. 预减库存
@@ -134,12 +142,35 @@ public class OrderService {
         return order.getId();
     }
 
+    // 获取未支付的订单List，分页返回
+    public Page<Order> getUnpaid(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createTime").descending());
+        Long uid = LocalUser.getLocalUser().getId();
+        Date now = new Date();
+        return orderRepository.findByExpiredTimeGreaterThanAndStatusAndUserId(now, OrderStatus.UNPAID.value(), uid, pageable);
+    }
+
+    // 根据状态来查询相关订单
+    public Page<Order> getOrderByStatus(Integer status, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createTime").descending());
+        Long uid = LocalUser.getLocalUser().getId();
+        if (status == OrderStatus.All.value()) {
+            return orderRepository.findByUserId(uid, pageable);
+        }
+        return orderRepository.findByUserIdAndStatus(uid, status, pageable);
+    }
+
+    public Optional<Order> getDetailOfOrder(Long orderId) {
+        Long uid = LocalUser.getLocalUser().getId();
+        return orderRepository.findFirstByUserIdAndId(uid, orderId);
+    }
+
     /**
      * 预减库存。可能会说，之前的orderchecker不是做了库存检测吗？
      * 之前的库存检测只是检测，并没有减库存，如果同时一个时刻有多个订单到来，都通过了检测。
      * 但是实际总的订单中sku数量远远大于库存，就会有超卖的现象。
      * 因为下单这种多线程的情况，去访问一个共享变量，就一定会出现数量不一致的情况。【JMM，联系这个】
-     * 而且多线程情况下，还有可能会有乱序执行的问题
+     * 而且多线程情况下，还有可能会有乱序执行的问题。
      * 所以在此处要做库存预减。
      * 【这个地方一定要注意多线程的问题，不要再查询再判断，本质并没有解决并发的问题】
      *

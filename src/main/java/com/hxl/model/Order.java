@@ -59,6 +59,9 @@ public class Order extends BaseEntity{
     // 订单过期时间，用来判断是 未支付 还是 已取消
     private Date expiredTime;
 
+    // 下单时间，手动单独控制【而 createTime 为记录创建时间，下面这个才是真正的下单时间】
+    private Date placedTime;
+
     // 留给微信支付
     private String prepayId;
 

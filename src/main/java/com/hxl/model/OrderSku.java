@@ -2,6 +2,7 @@ package com.hxl.model;
 
 import com.hxl.dto.SkuInfoDTO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 public class OrderSku {
 
     private Long id;

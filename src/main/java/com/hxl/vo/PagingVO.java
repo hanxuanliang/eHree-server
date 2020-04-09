@@ -28,6 +28,7 @@ public class PagingVO<T, K> extends Paging<T> {
         Mapper mapper = DozerBeanMapperBuilder.buildDefault();
         List<K> voList = new ArrayList<>();
         tList.forEach(t -> {
+            // map(source, target)
             K vo = mapper.map(t, classK);
             voList.add(vo);
         });
