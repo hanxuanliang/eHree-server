@@ -29,6 +29,19 @@ public class CommonUtil {
         return nowTime < endTime && nowTime > startTime;
     }
 
+    public static Boolean isOutOfDate(Date startTime, Long period) {
+        long now = Calendar.getInstance().getTimeInMillis();
+        Long startTimeStamp = startTime.getTime();
+        Long periodMill = period * 1000;
+        return now > startTimeStamp + periodMill;
+    }
+
+    public static Boolean isOutOfDate(Date expiredTime) {
+        long now = Calendar.getInstance().getTimeInMillis();
+        long expiredStamp = expiredTime.getTime();
+        return now > expiredStamp;
+    }
+
     public static Calendar addSeconds(Calendar now, int seconds) {
         now.add(Calendar.SECOND, seconds);
         return now;

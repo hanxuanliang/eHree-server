@@ -52,7 +52,7 @@ public class OrderController {
     @ScopeLevel
     @PutMapping("/status/unpaid")
     public PagingVO getUnpaid(@RequestParam(defaultValue = "0") Integer start,
-                                        @RequestParam(defaultValue = "10") Integer count) {
+                              @RequestParam(defaultValue = "10") Integer count) {
         PageCounter page = CommonUtil.convertToPageParameter(start, count);
         Page<Order> orderPage = orderService.getUnpaid(page.getPage(), page.getCount());
         PagingVO pagingVO = new PagingVO(orderPage, OrderSimpleVO.class);
@@ -75,10 +75,12 @@ public class OrderController {
 
     // 查询订单详情
     @ScopeLevel
-    @PutMapping("/detail/{id}")
-    public OrderPureVO getOrderByStatus(@PathVariable(name = "id") Long orderId) {
-        Optional<Order> detail = orderService.getDetailOfOrder(orderId);
-        return detail.map(o -> new OrderPureVO(o, payTimeLimit))
-                .orElseThrow(() -> { throw new NotFoundException(50009); });
+    @GetMapping("/detail/{id}")
+    public OrderPureVO getOrderDetail(@PathVariable(name = "id") Long oid) {
+        Optional<Order> orderOptional = orderService.getDetailOfOrder(oid);
+        // FIXME 在 orElseThrow() 里面不要 throw，在java8有些版本里面，检测是错的，但是IDEA是不检测的
+        // 建议在这直接 new 这个错误
+        return orderOptional.map(order -> new OrderPureVO(order, payTimeLimit))
+                .orElseThrow(() -> new NotFoundException(50009) );
     }
 }

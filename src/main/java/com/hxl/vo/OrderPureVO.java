@@ -13,7 +13,6 @@ import java.util.Date;
  * @Author: hanxuanliang
  * @Date: 2020/4/9 9:25
  */
-@ToString
 @Setter
 @Getter
 public class OrderPureVO extends Order {

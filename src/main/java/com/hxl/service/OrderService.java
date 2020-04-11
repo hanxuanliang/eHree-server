@@ -85,7 +85,7 @@ public class OrderService {
                     .orElseThrow(() -> new NotFoundException(40004));
             // 检测 coupon_status = 1 的优惠券
             UserCoupon userCoupon = userCouponRepository
-                    .findFirstByUserIdAndAndCouponIdandAndStatusaAndOrderId(uid, couponId, 1, null)
+                    .findFirstByUserIdAndCouponIdAndStatusAndOrderId(uid, couponId, 1, null)
                     .orElseThrow(() -> new NotFoundException(50006));
             couponChecker = new CouponChecker(coupon, iMoneyDiscount);
         }

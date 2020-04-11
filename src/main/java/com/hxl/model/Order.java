@@ -1,7 +1,10 @@
 package com.hxl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.hxl.core.enums.OrderStatus;
 import com.hxl.dto.OrderAddressDTO;
+import com.hxl.utils.CommonUtil;
 import com.hxl.utils.GenericAndJson;
 import lombok.*;
 import org.hibernate.annotations.Where;
@@ -94,6 +97,19 @@ public class Order extends BaseEntity{
     public List<OrderSku> getSnapItems() {
         return GenericAndJson.jsonToObject(this.snapItems,
                 new TypeReference<List<OrderSku>>() {});
+    }
+
+    @JsonIgnore
+    public OrderStatus getStatusEnum() {
+        return OrderStatus.toType(this.status);
+    }
+
+    // 充血模型，在模型类中不应该只有纯粹的属性，还应该有业务方法，扩展模型类的领域范围
+    public Boolean needCancel(Long period) {
+        if (!this.getStatusEnum().equals(OrderStatus.UNPAID)) {
+            return false;
+        }
+        return CommonUtil.isOutOfDate(this.getExpiredTime());
     }
 
 }

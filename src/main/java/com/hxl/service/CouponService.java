@@ -59,7 +59,7 @@ public class CouponService {
 
         // 3. 去检验一下 DB 中有没有 uid-couponId 连接的数据，如果有说明已经领取了，就报错
         // 【需要注意的是，这里是 ifPresent，如果存在就报错，不存在就跳过异常】
-        userCouponRepository.findFirstByUserIdAndAndCouponId(uid, couponId)
+        userCouponRepository.findFirstByUserIdAndCouponId(uid, couponId)
                 .ifPresent((userCoupon) -> {throw new ParameterException(40006);});
 
         // 4. 创建 usercoupon，写入 DB 中
