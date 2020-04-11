@@ -105,7 +105,7 @@ public class Order extends BaseEntity{
     }
 
     // 充血模型，在模型类中不应该只有纯粹的属性，还应该有业务方法，扩展模型类的领域范围
-    public Boolean needCancel(Long period) {
+    public Boolean needCancel() {
         if (!this.getStatusEnum().equals(OrderStatus.UNPAID)) {
             return false;
         }

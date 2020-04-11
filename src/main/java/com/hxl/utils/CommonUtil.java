@@ -2,6 +2,7 @@ package com.hxl.utils;
 
 import com.hxl.bo.PageCounter;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -45,5 +46,14 @@ public class CommonUtil {
     public static Calendar addSeconds(Calendar now, int seconds) {
         now.add(Calendar.SECOND, seconds);
         return now;
+    }
+
+    public static String yuanTofenPlainString(BigDecimal p) {
+        p = p.multiply(new BigDecimal("100"));
+        return CommonUtil.toPlain(p);
+    }
+
+    public static String toPlain(BigDecimal p) {
+        return p.stripTrailingZeros().toString();
     }
 }
