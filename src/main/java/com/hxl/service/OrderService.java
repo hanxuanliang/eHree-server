@@ -165,6 +165,15 @@ public class OrderService {
         return orderRepository.findFirstByUserIdAndId(uid, orderId);
     }
 
+    public void updateOrderPrepayId(Long orderId, String prepayId) {
+        Optional<Order> order = orderRepository.findById(orderId);
+        order.ifPresent(o -> {
+            o.setPrepayId(prepayId);
+            orderRepository.save(o);
+        });
+        order.orElseThrow(() -> new ParameterException(10007));
+    }
+
     /**
      * 预减库存。可能会说，之前的orderchecker不是做了库存检测吗？
      * 之前的库存检测只是检测，并没有减库存，如果同时一个时刻有多个订单到来，都通过了检测。

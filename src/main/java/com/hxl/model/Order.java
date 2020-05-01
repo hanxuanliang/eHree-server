@@ -65,7 +65,9 @@ public class Order extends BaseEntity{
     // 下单时间，手动单独控制【而 createTime 为记录创建时间，下面这个才是真正的下单时间】
     private Date placedTime;
 
-    // 留给微信支付
+    // 留给微信支付【微信支付的时候会在自己的服务器中下一个订单，返回的就是这个 prepayid，
+    // 然后把这个值存储在 order模型下的这个字段】
+    // 而之所以要留这个字段就是给延迟支付做准备的，不要每一次发起支付都调用微信的api
     private String prepayId;
 
     // 这笔订单最终的价格

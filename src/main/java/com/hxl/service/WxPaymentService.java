@@ -5,11 +5,13 @@ import com.github.wxpay.sdk.WXPay;
 import com.hxl.core.LocalUser;
 import com.hxl.exception.ForbiddenException;
 import com.hxl.exception.NotFoundException;
+import com.hxl.exception.ParameterException;
 import com.hxl.exception.ServerErrorException;
 import com.hxl.model.Order;
 import com.hxl.repository.OrderRepository;
 import com.hxl.utils.CommonUtil;
 import com.hxl.utils.HttpRequestProxy;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,9 @@ public class WxPaymentService {
     @Resource
     private OrderRepository orderRepository;
 
+    @Resource
+    private OrderService orderService;
+
     @Value("${ehree.order.pay-callback-host}")
     private String payCallbaclHost;
 
@@ -51,7 +56,18 @@ public class WxPaymentService {
             throw new ForbiddenException(50010);
         }
         WXPay wxPay = assembleWxPayConfig();
-        wxPay.unifiedOrder();
+        Map<String, String> params = assemblePreOrderParams(order.getFinalTotalPrice(), order.getOrderNo());
+        Map<String, String> wxOrder;
+        try {
+            wxOrder = wxPay.unifiedOrder(params);
+        } catch (Exception e) {
+            throw new ServerErrorException(9999);
+        }
+        // 看返回结果，然后将 prepayid 插入到db中
+        if (unifiedOrderSuccess(wxOrder)) {
+            orderService.updateOrderPrepayId(order.getId(), wxOrder.get("prepay_id"));
+
+        }
         return null;
     }
 
@@ -79,6 +95,23 @@ public class WxPaymentService {
         data.put("spbill_create_ip", HttpRequestProxy.getRemoteRealIp());
         data.put("notify_url", this.payCallbaclHost + this.payCallbackPath);
         return data;
+    }
+
+    private Map<String, String> makePaySignature(Map<String, String> wxOrder) {
+        String packages = "prepay_id=" + wxOrder.get("prepay_id");
+        Map<String, String> wxPayMap = new HashMap<>(16);
+
+        wxPayMap.put("timeStamp", CommonUtil.timestamp10());
+        wxPayMap.put("nonceStr", RandomStringUtils.randomAlphabetic(32));
+        wxPayMap.put("package", packages);
+        wxPayMap.put("signType", "HMAC-SHA256");
+    }
+
+    private boolean unifiedOrderSuccess(Map<String, String> wxOrder) {
+        if (!"SUCCESS".equals(wxOrder.get("return_code")) || !"SUCCESS".equals(wxOrder.get("result_code"))) {
+            throw new ParameterException(10007);
+        }
+        return true;
     }
 
 }

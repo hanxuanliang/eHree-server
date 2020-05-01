@@ -56,4 +56,11 @@ public class CommonUtil {
     public static String toPlain(BigDecimal p) {
         return p.stripTrailingZeros().toString();
     }
+
+    // 10 位时间戳
+    public static String timestamp10() {
+        long timestamp13 = Calendar.getInstance().getTimeInMillis();
+        String timestamp13str = Long.toString(timestamp13);
+        return timestamp13str.substring(0, timestamp13str.length() - 3);
+    }
 }
