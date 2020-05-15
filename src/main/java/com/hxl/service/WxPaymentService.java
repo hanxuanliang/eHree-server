@@ -105,6 +105,7 @@ public class WxPaymentService {
         wxPayMap.put("nonceStr", RandomStringUtils.randomAlphabetic(32));
         wxPayMap.put("package", packages);
         wxPayMap.put("signType", "HMAC-SHA256");
+        return null;
     }
 
     private boolean unifiedOrderSuccess(Map<String, String> wxOrder) {

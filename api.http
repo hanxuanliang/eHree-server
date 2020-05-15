@@ -57,6 +57,23 @@ Content-Type: application/json
 GET {{baseUrl}}/v1/coupon/whole_store
 Content-Type: application/json
 
+### user 测试 带password的测试
+POST {{baseUrl}}/v1/token/
+Content-Type: application/json
+
+{
+  "account": "hxl123",
+  "password": "test123"
+}
+
+### user验证测试 不带password，依靠微信的openid返回的data进行token加密
+POST {{baseUrl}}/v1/token/verify
+Content-Type: application/json
+
+{
+  "token": "0e40a584386c3f52bee84639fa2608ce"
+}
+
 ### 下单
 POST {{baseUrl}}/v1/order
 Content-Type: application/json
